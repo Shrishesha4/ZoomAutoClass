@@ -7,4 +7,6 @@ This is a very basic python code which automates the process of joining and leav
  - Always give time in 24hr format inside [data.py](data.py).
  
 # Support
- - Make sure to watch [this](https://www.youtube.com/watch?v=me23_XFV3OY) video on YouTube before reporting an issue.
+ - (https://www.youtube.com/@Shrishesha4)
+ - (https://www.linkedin.com/in/shrishesha)
+ - (https://www.twitter.com/Shrishesha4)
