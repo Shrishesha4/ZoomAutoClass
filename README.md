@@ -3,8 +3,8 @@ This is a very basic python code which automates the process of joining and leav
 
 # Requirements 
  - Put a random zoom link in your browser address bar and hit enter. Make sure to check [this](docs/image1.png) box and click open so you don't have to do it again and again after automating.
- - Make sure to disable [this](docs/image2.png) 'ask for confirmation while you exit a meeting' box in your zoom settings.
- - Always give time in 24hr format inside [data.py](data.py).
+ - Make sure to disable 'ask for confirmation while you exit a meeting' box in your zoom settings.
+ - Always give time in 24hr format inside.
  
 # Support
  - (https://www.youtube.com/@Shrishesha4)
