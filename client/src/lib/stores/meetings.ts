@@ -58,18 +58,33 @@ export async function updateIsRunning(running: boolean) {
     if (currentUser) {
         const userDoc = doc(db, 'users', currentUser.uid);
         try {
-            // Try to get the document first
             const docSnap = await getDoc(userDoc);
             
             if (!docSnap.exists()) {
-                // Create the document if it doesn't exist
                 await setDoc(userDoc, { meetings: [], isRunning: running });
             } else {
-                // Update existing document
                 await updateDoc(userDoc, { isRunning: running });
+            }
+
+        
+
+            // Add error handling for automation server
+            if (running) {
+                const response = await fetch('/api/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(docSnap.data()?.meetings || [])
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to start automation server');
+                }
             }
         } catch (error) {
             console.error('Error updating running state:', error);
+            // Revert the running state if automation failed
+            await updateDoc(userDoc, { isRunning: !running });
+            throw error;
         }
     }
 }

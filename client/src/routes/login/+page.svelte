@@ -1,12 +1,36 @@
 <script lang="ts">
-    import { auth, googleProvider } from '$lib/firebase';
+    import { auth, db, googleProvider } from '$lib/firebase';
     import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, browserPopupRedirectResolver } from 'firebase/auth';
     import { goto } from '$app/navigation';
+	import { doc, getDoc, setDoc } from 'firebase/firestore';
 
     let email = '';
     let password = '';
     let isLogin = true;
     let error = '';
+
+    async function handleAuth() {
+        try {
+            if (isLogin) {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                // Create initial user document if it doesn't exist
+                const userDoc = doc(db, 'users', userCredential.user.uid);
+                const docSnap = await getDoc(userDoc);
+                if (!docSnap.exists()) {
+                    await setDoc(userDoc, { meetings: [], isRunning: false });
+                }
+            } else {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                // Create initial user document for new users
+                const userDoc = doc(db, 'users', userCredential.user.uid);
+                await setDoc(userDoc, { meetings: [], isRunning: false });
+            }
+            goto('/');
+        } catch (e: any) {
+            console.error('Auth error:', e);
+            error = e.message;
+        }
+    }
 
     async function signInWithGoogle() {
         try {
@@ -18,22 +42,16 @@
             
             const result = await signInWithPopup(auth, googleProvider, browserPopupRedirectResolver);
             if (result.user) {
+                // Create initial user document if it doesn't exist
+                const userDoc = doc(db, 'users', result.user.uid);
+                const docSnap = await getDoc(userDoc);
+                if (!docSnap.exists()) {
+                    await setDoc(userDoc, { meetings: [], isRunning: false });
+                }
                 goto('/');
             }
         } catch (e: any) {
-            error = e.message;
-        }
-    }
-
-    async function handleAuth() {
-        try {
-            if (isLogin) {
-                await signInWithEmailAndPassword(auth, email, password);
-            } else {
-                await createUserWithEmailAndPassword(auth, email, password);
-            }
-            goto('/');
-        } catch (e: any) {
+            console.error('Google sign-in error:', e);
             error = e.message;
         }
     }
